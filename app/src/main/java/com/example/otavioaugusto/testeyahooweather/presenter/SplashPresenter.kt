@@ -16,28 +16,15 @@ import com.example.otavioaugusto.testeyahooweather.interfaces.ContratoSplash
 import com.example.otavioaugusto.testeyahooweather.view.MainActivity
 
 class SplashPresenter(var view:ContratoSplash.View):ContratoSplash.Presenter {
-    var hasNetwork = false
-    var statusGps = false
-    private var locationGps: Location? = null
-
-
 
     override fun checkGPS(context: Context) : Boolean{
-
 
         var locationManager:LocationManager
         locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-
-        Log.e("checkGPS",""+ locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        )
-
-
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
-
     }
-
 
     @SuppressLint("MissingPermission")
     override fun getLocation(context: Context) {
@@ -46,27 +33,26 @@ class SplashPresenter(var view:ContratoSplash.View):ContratoSplash.Presenter {
         val provider = locationManager.getBestProvider(criteria, false)
         val location = locationManager.getLastKnownLocation(provider)
 
+        //atualiza a cada 5 segundos a posição do gps
         if (provider == LocationManager.GPS_PROVIDER){
-
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0F, object : LocationListener{
                 override fun onLocationChanged(location: Location?) {
                     view.setLatLong(location!!.latitude, location!!.longitude)
-
                     Log.e("locationviewlat",""+location!!.latitude)
                     Log.e("locationviewlongi",""+location!!.longitude)
                 }
 
                 override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-                    view.setMessage(provider.toString())
+                    Log.d("Provider", "${provider}")
                 }
 
                 override fun onProviderEnabled(provider: String?) {
-                    view.setMessage(provider.toString())
+                    Log.d("Provider", "${provider}")
                 }
 
                 override fun onProviderDisabled(provider: String?) {
 
-                    view.setMessage(provider.toString())
+                    Log.d("Provider", "${provider}")
 
 
                 }
@@ -74,8 +60,6 @@ class SplashPresenter(var view:ContratoSplash.View):ContratoSplash.Presenter {
             })
 
         }
-
-        Log.e("location",""+location)
 
         if (location==null){
             view.setMessage("Sem localização")
@@ -85,12 +69,6 @@ class SplashPresenter(var view:ContratoSplash.View):ContratoSplash.Presenter {
             Log.e("locationviewlat",""+location.latitude)
             Log.e("locationviewlongi",""+location.longitude)
 
-
-
         }
-
-
     }
-
-
 }
