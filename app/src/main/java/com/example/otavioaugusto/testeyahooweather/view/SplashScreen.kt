@@ -21,25 +21,59 @@ import com.example.otavioaugusto.testeyahooweather.utils.Localizacao
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.security.Provider
 
 class SplashScreen : AppCompatActivity(), ContratoSplash.View {
 
 
-    val REQUEST_LOCATION = 1
 
+    val REQUEST_LOCATION = 1
     var lat: Double?=null
     var long: Double?=null
     lateinit var presenter: ContratoSplash.Presenter
+    private var mDelayHandler: Handler? = null
+    private val SPLASH_DELAY: Long = 3000
+    var gpsStatus = false
 
+    internal val mRunnable: Runnable = Runnable {
+        if (!isFinishing) {
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            intent.putExtra("latitude", lat)
+            intent.putExtra("longitude", long)
+            startActivity(intent)
+            finish()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         presenter = SplashPresenter(this)
 
+        var gpsStatus =  presenter.checkGPS(this)
+        Log.e("oncreate",""+gpsStatus)
+
+        if (!gpsStatus){
+
+            alert()
+
+        }else{
+            presenter.getLocation(this)
+
+            mDelayHandler = Handler()
+
+            mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
+        }
+
         checkPermission()
 
     }
+//
+//    override fun onStart() {
+//        super.onStart()
+//        presenter.getLocation(this)
+//    }
+
 
 
     override fun setLatLong(latitude: Double, longitude: Double) {
@@ -65,30 +99,56 @@ class SplashScreen : AppCompatActivity(), ContratoSplash.View {
 
         else{
 
-            presenter.getLocation(this)
 
-//            Localizacao.getLocation(this)
 
-            Handler().postDelayed({
-                var intent = Intent(this, MainActivity::class.java)
-                intent.putExtra("latitude", lat)
-                intent.putExtra("longitude", long)
-                startActivity(intent)
-            }, 2000)
+                presenter.getLocation(this)
+
+            if (gpsStatus) {
+
+                mDelayHandler = Handler()
+
+                mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
+
+            }
+
+
+//
+//                Handler().postDelayed({
+//                    var intent = Intent(this, MainActivity::class.java)
+//                    intent.putExtra("latitude", lat)
+//                    intent.putExtra("longitude", long)
+//                    startActivity(intent)
+//                }, 3000)
+
+            }
 
         }
-    }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode==REQUEST_LOCATION){
+
             presenter.getLocation(this)
-//            Localizacao.getLocation(this)
-            Handler().postDelayed({
-                var intent = Intent(this, MainActivity::class.java)
-                intent.putExtra("latitude", lat)
-                intent.putExtra("longitude", long)
-                startActivity(intent)
-            }, 2000)
+
+
+
+//                Handler().postDelayed({
+//                    var intent = Intent(this, MainActivity::class.java)
+//                    intent.putExtra("latitude", lat)
+//                    intent.putExtra("longitude", long)
+//                    startActivity(intent)
+//                }, 3000)
+
+
+
+            if (gpsStatus) {
+
+                mDelayHandler = Handler()
+
+                mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
+
+            }
+
         }else{
 
             finish()
@@ -97,34 +157,48 @@ class SplashScreen : AppCompatActivity(), ContratoSplash.View {
 
     override fun setMessage(msg: String) {
         Toast.makeText( this, msg, Toast.LENGTH_LONG).show()
+        Log.e("setmensagem",""+msg)
     }
 
 
-//
-// fun alert(){
-//
-//     val dialog = AlertDialog.Builder(this)
-//     dialog.setMessage("Ops..Localização desativada")
-//     dialog.setPositiveButton("Ativar?"){dialog, which ->
-//         val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-//         startActivityForResult(myIntent,2)
-//     }
-//
-//     dialog.setNegativeButton("cancel"){dialog, which ->
-//
-//     }
-//
-//     dialog.show()
-// }
+
+    fun alert(){
+
+        val dialog = AlertDialog.Builder(this)
+        dialog.setMessage("Ops..Localização desativada")
+        dialog.setPositiveButton("Ativar?"){dialog, which ->
+            val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivityForResult(myIntent,2)
+        }
+
+        dialog.setNegativeButton("cancel"){dialog, which ->
+
+        }
+
+        dialog.show()
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode==2){
-          //  presenter.getLocation(this)
+
+
+                presenter.getLocation(this)
+
+
+                mDelayHandler = Handler()
+
+                mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
+
+
+
+
         }else{
             Log.e("Erroactivity", "${requestCode}")
 
         }
     }
+
+
 
 
 }

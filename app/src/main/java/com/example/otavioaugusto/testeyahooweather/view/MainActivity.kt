@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        // verificarGPSisEnable()
 
 
         button.setOnClickListener {
@@ -88,32 +87,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun verificarGPSisEnable():Boolean{
-        locationManager =  getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val criteria = Criteria()
-        val provider = locationManager.getBestProvider(criteria, false)
 
-        var isEnable = locationManager.isProviderEnabled(provider)
-
-        if (!isEnable) {
-            val dialog = AlertDialog.Builder(this)
-            dialog.setMessage("erro")
-            dialog.setPositiveButton("Ok"){dialog, which ->
-                val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivityForResult(myIntent,2)
-            }
-
-            dialog.setNegativeButton("cancel"){dialog, which ->
-
-            }
-
-            dialog.show()
-
-            return false
-        }
-
-        return true
-    }
 
 
 }
