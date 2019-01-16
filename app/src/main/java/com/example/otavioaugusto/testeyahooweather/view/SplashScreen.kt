@@ -1,14 +1,17 @@
 package com.example.otavioaugusto.testeyahooweather.view
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
 import android.support.v4.app.ActivityCompat
+import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.widget.Toast
@@ -26,179 +29,145 @@ import java.security.Provider
 class SplashScreen : AppCompatActivity(), ContratoSplash.View {
 
 
-
-    val REQUEST_LOCATION = 1
-    var lat: Double?=null
-    var long: Double?=null
+    val REQUEST = 1
     lateinit var presenter: ContratoSplash.Presenter
     private var mDelayHandler: Handler? = null
     private val SPLASH_DELAY: Long = 3000
-    var gpsStatus = false
+    var lat: Double?=null
+    var long: Double?=null
+
+    private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
 
     internal val mRunnable: Runnable = Runnable {
-        if (!isFinishing) {
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            intent.putExtra("latitude", lat)
-            intent.putExtra("longitude", long)
-            startActivity(intent)
-            finish()
-        }
-    }
+    if (!isFinishing) {
+        val intent = Intent(applicationContext, MainActivity::class.java)
 
+        startActivity(intent)
+        finish()
+    }
+}
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        presenter = SplashPresenter(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkPermission(permissions)) {
 
-        var gpsStatus =  presenter.checkGPS(this)
-        Log.e("oncreate",""+gpsStatus)
+                mDelayHandler = Handler()
+                mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
 
-        if (!gpsStatus){
 
-            alert()
+                //enableView()
+            } else {
 
-        }else{
-            presenter.getLocation(this)
+                requestPermissions(permissions, REQUEST)
+            }
+        } else {
+            // enableView()
 
             mDelayHandler = Handler()
-
             mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
+
         }
 
-        checkPermission()
+
 
     }
+
 //
-//    override fun onStart() {
-//        super.onStart()
-//        presenter.getLocation(this)
+//   override fun alert(){
+//
+//        val dialog = AlertDialog.Builder(this)
+//        dialog.setMessage("Ops..Localização desativada")
+//        dialog.setPositiveButton("Ativar?"){dialog, which ->
+//            val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+//            startActivityForResult(myIntent,2)
+//        }
+//
+//        dialog.setNegativeButton("cancel"){dialog, which ->
+//
+//        }
+//
+//        dialog.show()
+//    }
+//
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        if (requestCode==2) {
+//
+//            mDelayHandler = Handler()
+//
+//            mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
+//
+//        }
+//    }
+
+    private fun checkPermission(permissionArray: Array<String>): Boolean {
+
+        var allSuccess = true
+        for (i in permissionArray.indices) {
+            if (checkCallingOrSelfPermission(permissionArray[i]) == PackageManager.PERMISSION_DENIED)
+                allSuccess = false
+        }
+        return allSuccess
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST) {
+            var allSuccess = true
+            for (i in permissions.indices) {
+                if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                    allSuccess = false
+                    val requestAgain = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && shouldShowRequestPermissionRationale(permissions[i])
+                    if (requestAgain) {
+                        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Go to settings and enable the permission", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            if (allSuccess)
+
+                mDelayHandler = Handler()
+            mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
+
+
+        }
+    }
+
+
+
+//    override fun setLatLong(latitude: Double, longitude: Double) {
+//        lat = latitude
+//        long = longitude
+//
+//    }
+//
+//    fun checkPermission(){
+//        if (ActivityCompat.checkSelfPermission(
+//                this, android.Manifest.permission.ACCESS_FINE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//            && ActivityCompat.checkSelfPermission(
+//                this,
+//                android.Manifest.permission.ACCESS_COARSE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        )
+//            ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf<String>(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION),
+//                REQUEST_LOCATION
+//            )
+//
+//        else{
+//
+//            Handler().postDelayed({
+//                var intent = Intent(this, MainActivity::class.java)
+//                startActivity(intent)
+//            }, 2000)
+//
+//        }
 //    }
 
 
-
-    override fun setLatLong(latitude: Double, longitude: Double) {
-        lat = latitude
-        long = longitude
-    }
-
-
-    fun checkPermission(){
-        if (ActivityCompat.checkSelfPermission(
-                this, android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        )
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf<String>(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION),
-                REQUEST_LOCATION
-            )
-
-        else{
-
-
-
-                presenter.getLocation(this)
-
-            if (gpsStatus) {
-
-                mDelayHandler = Handler()
-
-                mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
-
-            }
-
-
-//
-//                Handler().postDelayed({
-//                    var intent = Intent(this, MainActivity::class.java)
-//                    intent.putExtra("latitude", lat)
-//                    intent.putExtra("longitude", long)
-//                    startActivity(intent)
-//                }, 3000)
-
-            }
-
-        }
-
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode==REQUEST_LOCATION){
-
-            presenter.getLocation(this)
-
-
-
-//                Handler().postDelayed({
-//                    var intent = Intent(this, MainActivity::class.java)
-//                    intent.putExtra("latitude", lat)
-//                    intent.putExtra("longitude", long)
-//                    startActivity(intent)
-//                }, 3000)
-
-
-
-            if (gpsStatus) {
-
-                mDelayHandler = Handler()
-
-                mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
-
-            }
-
-        }else{
-
-            finish()
-        }
-    }
-
-    override fun setMessage(msg: String) {
-        Toast.makeText( this, msg, Toast.LENGTH_LONG).show()
-        Log.e("setmensagem",""+msg)
-    }
-
-
-
-    fun alert(){
-
-        val dialog = AlertDialog.Builder(this)
-        dialog.setMessage("Ops..Localização desativada")
-        dialog.setPositiveButton("Ativar?"){dialog, which ->
-            val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-            startActivityForResult(myIntent,2)
-        }
-
-        dialog.setNegativeButton("cancel"){dialog, which ->
-
-        }
-
-        dialog.show()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode==2){
-
-
-                presenter.getLocation(this)
-
-
-                mDelayHandler = Handler()
-
-                mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
-
-
-
-
-        }else{
-            Log.e("Erroactivity", "${requestCode}")
-
-        }
-    }
-
-
-
-
 }
+
+

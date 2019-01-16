@@ -6,6 +6,8 @@ data class ResponseApi(
     @SerializedName("weather")
     val ListWeather:List<Weather>,
     @SerializedName("name")
-    val name:String
+    val name:String,
+    @SerializedName("main")
+    val main:Main
 
 )

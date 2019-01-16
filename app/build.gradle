@@ -34,7 +34,13 @@ dependencies {
 
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation "com.squareup.retrofit2:converter-gson:2.5.0"
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
+
+
+    testImplementation "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
+    testImplementation 'org.mockito:mockito-core:2.10.0'
+    testImplementation 'org.assertj:assertj-core:3.8.0'
 
 
 }

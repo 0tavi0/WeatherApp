@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Weather App</string>
+    <string name="centigrade">°C</string>
+    <string name="erroInternet">Problema com a Internet</string>
+    <string name="erroLocalizacao">Ops..Localização Desativada</string>
+    <string name="btnAtivar">Ativar?</string>
+    <string name="btnCancel">cancel</string>
+    <string name="btnOk">Ok</string>
+
 </resources>
