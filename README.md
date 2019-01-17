@@ -4,18 +4,15 @@ Projeto WeatherApp, desenvolvido em Kotlin, onde é feito uma requisição para 
 
 # Instalação
 - Está anexado neste projeto o arquivo apk. A apk pode ser baixado clicando 
-[aqui](https://github.com/0tavi0/JsonConsumer/blob/master/app-debug.apk).
+[aqui](https://github.com/0tavi0/WeatherApp/blob/master/app.apk).
 - Através do terminal execute o clone do projeto no GitHub
-  	
-  	```
-  	git clone git@github.com:0tavi0/WeatherApp.gitt.git
-  	```	
- Com o projeto clonado, execute o comando abaixo para instalar as dependências do projeto.
+
+  	```git clone git@github.com:0tavi0/WeatherApp.gitt.git . Com o projeto clonado, execute o comando abaixo para instalar as dependências do projeto.
  
  # ScreenShots
  <p align="center">
-   <img src="screenshots/screenshots.gif" width="200" title="hover text">
-   <img src="screenshots/screenshots.jpeg" width="200" alt="accessibility text">
+   <img src="screenshot/screenshot1.gif" width="200" title="hover text">
+   <img src="screenshot/screenshot.jpeg" width="200" alt="accessibility text">
  </p>
  
  # Projeto
