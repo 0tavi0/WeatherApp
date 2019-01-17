@@ -7,9 +7,11 @@ Projeto WeatherApp, desenvolvido em Kotlin, onde é feito uma requisição para 
 [aqui](https://github.com/0tavi0/WeatherApp/blob/master/app.apk).
 - Através do terminal execute o clone do projeto no GitHub
 
-  	```git clone git@github.com:0tavi0/WeatherApp.gitt.git . 
   	```
-  	Com o projeto clonado, execute o comando abaixo para instalar as dependências do projeto.
+  	git clone git@github.com:0tavi0/WeatherApp.gitt.git . 
+  	
+  	```
+  	Com o projeto clonado, exexecute o projeto no Android Studio.
  
  # ScreenShots
  <p align="center">
