@@ -1,5 +1,6 @@
 package com.example.otavioaugusto.testeyahooweather.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Criteria
@@ -11,6 +12,7 @@ import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 
 import android.content.Intent
+import android.location.Location
 import android.os.Build
 import android.provider.Settings
 import android.support.v7.app.AlertDialog
@@ -25,6 +27,8 @@ import android.os.StrictMode
 import android.widget.ImageView
 import com.example.otavioaugusto.testeyahooweather.interfaces.MainContrato
 import com.example.otavioaugusto.testeyahooweather.presenter.MainPresenter
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.squareup.picasso.Picasso
 
 
@@ -32,18 +36,23 @@ class MainActivity : AppCompatActivity(), MainContrato.View {
 
 
     lateinit var mAinPresenter: MainContrato.Presenter
-
     var lat: Double?=null
     var long: Double?=null
+    lateinit var fusedLocationClient: FusedLocationProviderClient
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         mAinPresenter = MainPresenter(this)
 
+
         val gpsStatus = mAinPresenter.checkGPS(this)
         val netWorkingStatus = mAinPresenter.isNetworkConnected(this)
+
 
         if (!netWorkingStatus){
             alertInternet(getString(R.string.erroInternet))
@@ -54,17 +63,23 @@ class MainActivity : AppCompatActivity(), MainContrato.View {
         }else{
 
             mAinPresenter.getLocation(this)
-            mAinPresenter.getDadosAPI(lat!!,long!!)
+
 
         }
+
+        mAinPresenter.getLocation(this)
 
 
     }
 
 
+
     override fun setLatLong(latitude: Double, longitude: Double) {
         lat = latitude
         long = longitude
+
+         mAinPresenter.getDadosAPI(lat!!,long!!)
+
 
     }
 
@@ -72,7 +87,7 @@ class MainActivity : AppCompatActivity(), MainContrato.View {
         if (msg.equals("Time out")){
             alertInternet(getString(R.string.erroInternet))
         }else{
-            alert(msg)
+            alertInternet(msg)
         }
     }
 
@@ -81,7 +96,8 @@ class MainActivity : AppCompatActivity(), MainContrato.View {
         dialog.setMessage(msg)
         dialog.setPositiveButton(getString(R.string.btnAtivar)){ dialog, which ->
             val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-            startActivityForResult(myIntent,2)
+            startActivity(myIntent)
+            finish()
         }
 
         dialog.setNegativeButton(getString(R.string.btnCancel)){ dialog, which ->
@@ -89,15 +105,7 @@ class MainActivity : AppCompatActivity(), MainContrato.View {
         }
 
         dialog.show()
-    }
 
-
-        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode==2) {
-
-            mAinPresenter.getLocation(this)
-
-        }
     }
 
 
@@ -105,8 +113,10 @@ class MainActivity : AppCompatActivity(), MainContrato.View {
         val dialog = AlertDialog.Builder(this)
         dialog.setMessage(msg)
         dialog.setPositiveButton(getString(R.string.btnOk)){ dialog, which ->
-//            val myIntent = Intent(Settings.ACTION_WIFI_SETTINGS)
+            val myIntent = Intent(Settings.ACTION_WIFI_SETTINGS)
 //            startActivityForResult(myIntent,2)
+            startActivity(myIntent)
+            finish()
         }
 
 

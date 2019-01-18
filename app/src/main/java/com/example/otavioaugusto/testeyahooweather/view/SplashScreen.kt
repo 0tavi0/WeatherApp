@@ -30,18 +30,13 @@ class SplashScreen : AppCompatActivity(), ContratoSplash.View {
 
 
     val REQUEST = 1
-    lateinit var presenter: ContratoSplash.Presenter
     private var mDelayHandler: Handler? = null
-    private val SPLASH_DELAY: Long = 3000
-    var lat: Double?=null
-    var long: Double?=null
-
+    private val SPLASH_DELAY: Long = 2000
     private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
 
     internal val mRunnable: Runnable = Runnable {
     if (!isFinishing) {
         val intent = Intent(applicationContext, MainActivity::class.java)
-
         startActivity(intent)
         finish()
     }
@@ -54,16 +49,10 @@ class SplashScreen : AppCompatActivity(), ContratoSplash.View {
 
                 mDelayHandler = Handler()
                 mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
-
-
-                //enableView()
             } else {
-
                 requestPermissions(permissions, REQUEST)
             }
         } else {
-            // enableView()
-
             mDelayHandler = Handler()
             mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
 
@@ -72,33 +61,6 @@ class SplashScreen : AppCompatActivity(), ContratoSplash.View {
 
 
     }
-
-//
-//   override fun alert(){
-//
-//        val dialog = AlertDialog.Builder(this)
-//        dialog.setMessage("Ops..Localização desativada")
-//        dialog.setPositiveButton("Ativar?"){dialog, which ->
-//            val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-//            startActivityForResult(myIntent,2)
-//        }
-//
-//        dialog.setNegativeButton("cancel"){dialog, which ->
-//
-//        }
-//
-//        dialog.show()
-//    }
-//
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        if (requestCode==2) {
-//
-//            mDelayHandler = Handler()
-//
-//            mDelayHandler!!.postDelayed(mRunnable, SPLASH_DELAY)
-//
-//        }
-//    }
 
     private fun checkPermission(permissionArray: Array<String>): Boolean {
 

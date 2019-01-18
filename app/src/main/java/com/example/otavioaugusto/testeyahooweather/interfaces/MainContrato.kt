@@ -18,6 +18,7 @@ interface MainContrato {
         fun checkGPS(context: Context):Boolean
         fun getDadosAPI(lat:Double, long:Double)
         fun isNetworkConnected(context: Context):Boolean
+        fun locationFused(context: Context)
 
     }
 }

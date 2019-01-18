@@ -6,5 +6,7 @@
     <string name="btnAtivar">Ativar?</string>
     <string name="btnCancel">cancel</string>
     <string name="btnOk">Ok</string>
+    <string name="msgSemLocalizacao">Sem Localização</string>
+    <string name="txtSemLocalizacao">Sem Localização</string>
 
 </resources>
